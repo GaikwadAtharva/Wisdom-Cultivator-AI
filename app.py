@@ -1,4 +1,5 @@
-from flask import Flask, request, render_template, redirect, url_for, Response
+from flask import Flask, request, render_template, redirect, url_for, Response, session
+import uuid
 
 from services.granite import get_granite_response, generate_reflection_title
 
@@ -13,6 +14,13 @@ from services.reflection_manager import (
 )
 
 app = Flask(__name__)
+app.secret_key = "wisdom-cultivator-session-key"
+
+
+def get_user_id():
+    if "user_id" not in session:
+        session["user_id"] = str(uuid.uuid4())
+    return session["user_id"]
 
 
 @app.route("/")
@@ -22,10 +30,11 @@ def home():
 
 @app.route("/chat")
 def chat():
-    reflections = get_all_reflections()
+    user_id = get_user_id()
+    reflections = get_all_reflections(user_id)
 
     if len(reflections) == 0:
-        reflection_id = create_reflection()
+        reflection_id = create_reflection(user_id)
         return redirect(url_for("open_reflection", reflection_id=reflection_id))
 
     latest_reflection = reflections[-1]
@@ -34,28 +43,31 @@ def chat():
 
 @app.route("/new")
 def new_reflection():
-    reflection_id = create_reflection()
+    user_id = get_user_id()
+    reflection_id = create_reflection(user_id)
     return redirect(url_for("open_reflection", reflection_id=reflection_id))
 
 
 @app.route("/rename/<int:reflection_id>", methods=["POST"])
 def rename_reflection(reflection_id):
+    user_id = get_user_id()
     new_title = request.form["new_title"].strip()
 
     if new_title:
-        update_reflection_title(reflection_id, new_title)
+        update_reflection_title(user_id, reflection_id, new_title)
 
     return redirect(url_for("open_reflection", reflection_id=reflection_id))
 
 
 @app.route("/delete/<int:reflection_id>")
 def delete_reflection_route(reflection_id):
-    delete_reflection(reflection_id)
+    user_id = get_user_id()
+    delete_reflection(user_id, reflection_id)
 
-    reflections = get_all_reflections()
+    reflections = get_all_reflections(user_id)
 
     if len(reflections) == 0:
-        new_id = create_reflection()
+        new_id = create_reflection(user_id)
         return redirect(url_for("open_reflection", reflection_id=new_id))
 
     latest_reflection = reflections[-1]
@@ -64,7 +76,8 @@ def delete_reflection_route(reflection_id):
 
 @app.route("/export/<int:reflection_id>")
 def export_reflection(reflection_id):
-    reflection = get_reflection(reflection_id)
+    user_id = get_user_id()
+    reflection = get_reflection(user_id, reflection_id)
 
     if reflection is None:
         return redirect(url_for("chat"))
@@ -93,7 +106,8 @@ def export_reflection(reflection_id):
 
 @app.route("/chat/<int:reflection_id>", methods=["GET", "POST"])
 def open_reflection(reflection_id):
-    reflection = get_reflection(reflection_id)
+    user_id = get_user_id()
+    reflection = get_reflection(user_id, reflection_id)
 
     if reflection is None:
         return redirect(url_for("chat"))
@@ -115,20 +129,20 @@ def open_reflection(reflection_id):
 
                 if reflection["title"] == "New Reflection":
                     title = generate_reflection_title(user_message)
-                    update_reflection_title(reflection_id, title)
+                    update_reflection_title(user_id, reflection_id, title)
 
             except Exception as e:
                 ai_response = f"Error: {e}"
 
-            add_message(reflection_id, user_message, ai_response)
+            add_message(user_id, reflection_id, user_message, ai_response)
 
             return redirect(url_for("open_reflection", reflection_id=reflection_id))
 
     return render_template(
         "chat.html",
-        reflection=get_reflection(reflection_id),
-        reflections=get_all_reflections(),
-        stats=get_statistics()
+        reflection=get_reflection(user_id, reflection_id),
+        reflections=get_all_reflections(user_id),
+        stats=get_statistics(user_id)
     )
 
 

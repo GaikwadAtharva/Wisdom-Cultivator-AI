@@ -2,27 +2,36 @@ import json
 import os
 from datetime import datetime
 
-DATA_FILE = "data/reflections.json"
+DATA_FOLDER = "data"
 
 
-def load_reflections():
-    if not os.path.exists(DATA_FILE):
+def get_data_file(user_id):
+    os.makedirs(DATA_FOLDER, exist_ok=True)
+    return os.path.join(DATA_FOLDER, f"reflections_{user_id}.json")
+
+
+def load_reflections(user_id):
+    data_file = get_data_file(user_id)
+
+    if not os.path.exists(data_file):
         return []
 
     try:
-        with open(DATA_FILE, "r", encoding="utf-8") as file:
+        with open(data_file, "r", encoding="utf-8") as file:
             return json.load(file)
     except:
         return []
 
 
-def save_reflections(reflections):
-    with open(DATA_FILE, "w", encoding="utf-8") as file:
+def save_reflections(user_id, reflections):
+    data_file = get_data_file(user_id)
+
+    with open(data_file, "w", encoding="utf-8") as file:
         json.dump(reflections, file, indent=4, ensure_ascii=False)
 
 
-def create_reflection():
-    reflections = load_reflections()
+def create_reflection(user_id):
+    reflections = load_reflections(user_id)
 
     new_id = 1
     if reflections:
@@ -36,13 +45,13 @@ def create_reflection():
     }
 
     reflections.append(reflection)
-    save_reflections(reflections)
+    save_reflections(user_id, reflections)
 
     return new_id
 
 
-def get_reflection(reflection_id):
-    reflections = load_reflections()
+def get_reflection(user_id, reflection_id):
+    reflections = load_reflections(user_id)
 
     for reflection in reflections:
         if reflection["id"] == reflection_id:
@@ -51,19 +60,19 @@ def get_reflection(reflection_id):
     return None
 
 
-def update_reflection_title(reflection_id, title):
-    reflections = load_reflections()
+def update_reflection_title(user_id, reflection_id, title):
+    reflections = load_reflections(user_id)
 
     for reflection in reflections:
         if reflection["id"] == reflection_id:
             reflection["title"] = title
             break
 
-    save_reflections(reflections)
+    save_reflections(user_id, reflections)
 
 
-def add_message(reflection_id, user, ai):
-    reflections = load_reflections()
+def add_message(user_id, reflection_id, user, ai):
+    reflections = load_reflections(user_id)
 
     for reflection in reflections:
         if reflection["id"] == reflection_id:
@@ -73,33 +82,29 @@ def add_message(reflection_id, user, ai):
             })
             break
 
-    save_reflections(reflections)
+    save_reflections(user_id, reflections)
 
 
-def delete_reflection(reflection_id):
-    reflections = load_reflections()
+def delete_reflection(user_id, reflection_id):
+    reflections = load_reflections(user_id)
 
     reflections = [
         reflection for reflection in reflections
         if reflection["id"] != reflection_id
     ]
 
-    save_reflections(reflections)
+    save_reflections(user_id, reflections)
 
 
-def get_all_reflections():
-    return load_reflections()
+def get_all_reflections(user_id):
+    return load_reflections(user_id)
 
 
-def get_statistics():
-    reflections = load_reflections()
+def get_statistics(user_id):
+    reflections = load_reflections(user_id)
 
     total_reflections = len(reflections)
-
-    total_messages = 0
-
-    for reflection in reflections:
-        total_messages += len(reflection["messages"])
+    total_messages = sum(len(reflection["messages"]) for reflection in reflections)
 
     latest_date = "No reflections yet"
 

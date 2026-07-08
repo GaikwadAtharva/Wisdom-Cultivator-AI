@@ -5,6 +5,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const form = document.querySelector(".chat-input-area");
     const button = form ? form.querySelector("button") : null;
     const searchBox = document.getElementById("searchReflections");
+    const menuBtn = document.getElementById("mobileMenuBtn");
+    const sidebar = document.querySelector(".journal-sidebar");
 
     if (messages) {
         messages.scrollTop = messages.scrollHeight;
@@ -56,13 +58,25 @@ document.addEventListener("DOMContentLoaded", () => {
             rows.forEach(row => {
                 const title = row.innerText.toLowerCase();
 
-                if (title.includes(searchText)) {
-                    row.style.display = "flex";
-                } else {
-                    row.style.display = "none";
-                }
+                row.style.display = title.includes(searchText) ? "flex" : "none";
             });
 
+        });
+    }
+
+    if (menuBtn && sidebar) {
+
+        menuBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            sidebar.classList.toggle("show");
+        });
+
+        sidebar.addEventListener("click", (e) => {
+            e.stopPropagation();
+        });
+
+        document.addEventListener("click", () => {
+            sidebar.classList.remove("show");
         });
     }
 
