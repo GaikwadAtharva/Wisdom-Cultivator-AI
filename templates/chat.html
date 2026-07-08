@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wisdom Cultivator AI | Reflection Journal</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/chat.css') }}">
+</head>
+
+<body>
+
+<div class="app-shell">
+
+    <aside class="journal-sidebar">
+
+        <div class="brand-box">
+            <img src="{{ url_for('static', filename='images/logos/logo.png') }}" alt="Wisdom Cultivator AI Logo" class="brand-logo">
+
+            <h2>Reflection Journal</h2>
+            <p>Powered by IBM Granite</p>
+        </div>
+
+        <div class="stats-box">
+            <h3>📊 Statistics</h3>
+
+            <div class="stat-item">
+                <span>Total Reflections</span>
+                <strong>{{ stats.total_reflections }}</strong>
+            </div>
+
+            <div class="stat-item">
+                <span>Total Messages</span>
+                <strong>{{ stats.total_messages }}</strong>
+            </div>
+
+            <div class="stat-item">
+                <span>Latest</span>
+                <strong>{{ stats.latest_date }}</strong>
+            </div>
+        </div>
+
+        <a href="/new" class="new-reflection-btn">
+            + New Reflection
+        </a>
+
+        <input
+            type="text"
+            id="searchReflections"
+            class="search-box"
+            placeholder="Search reflections...">
+
+        <div class="journal-list">
+
+            {% for item in reflections|reverse %}
+
+            <div class="journal-row">
+
+                <a href="/chat/{{ item.id }}"
+                   class="journal-item {% if item.id == reflection.id %}active{% endif %}">
+
+                    <span class="journal-title">{{ item.title }}</span>
+                    <span class="journal-date">{{ item.date }}</span>
+
+                </a>
+
+                <form action="/rename/{{ item.id }}" method="POST" class="rename-form">
+                    <input type="hidden" name="new_title" value="">
+                    <button type="button"
+                            class="rename-btn"
+                            onclick="renameReflection(this, '{{ item.title }}')">
+                        ✏️
+                    </button>
+                </form>
+
+                <a href="/delete/{{ item.id }}"
+                   class="delete-btn"
+                   onclick="return confirm('Delete this reflection?')">
+                    🗑
+                </a>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </aside>
+
+    <main class="chat-panel">
+
+        <header class="chat-topbar">
+
+            <div style="display:flex;align-items:center;gap:12px;">
+
+                <a href="/" class="home-link">
+                    ← Home
+                </a>
+
+                <a href="/export/{{ reflection.id }}" class="export-btn">
+                    📄 Export
+                </a>
+
+            </div>
+
+            <div>
+                <h1>Wisdom Cultivator AI</h1>
+                <p>Reflect. Understand. Grow.</p>
+            </div>
+
+        </header>
+
+        <section class="chat-messages">
+
+            {% if reflection.messages %}
+
+                {% for message in reflection.messages %}
+
+                <div class="message-row user-row">
+                    <div class="message-bubble user-bubble">
+                        <span class="message-label">You</span>
+                        <p>{{ message.user }}</p>
+                    </div>
+                </div>
+
+                <div class="message-row ai-row">
+                    <div class="message-bubble ai-bubble">
+                        <span class="message-label">Wisdom Cultivator AI</span>
+                        <p>{{ message.ai }}</p>
+                    </div>
+                </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <div class="empty-state">
+                    <h2>Start a new reflection 🌱</h2>
+                    <p>
+                        Share what is on your mind. Your reflection will be saved in your journal,
+                        and IBM Granite will respond with thoughtful guidance.
+                    </p>
+                </div>
+
+            {% endif %}
+
+        </section>
+
+        <form method="POST" class="chat-input-area">
+
+            <textarea
+                name="message"
+                placeholder="Write your reflection here..."
+                required></textarea>
+
+            <button type="submit">
+                Reflect
+            </button>
+
+        </form>
+
+    </main>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+<script>
+function renameReflection(button, oldTitle) {
+    const newTitle = prompt("Enter new reflection title:", oldTitle);
+
+    if (newTitle && newTitle.trim() !== "") {
+        const form = button.closest("form");
+        form.querySelector("input[name='new_title']").value = newTitle.trim();
+        form.submit();
+    }
+}
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,4 @@
+flask
+python-dotenv
+ibm-watsonx-ai
+gunicorn

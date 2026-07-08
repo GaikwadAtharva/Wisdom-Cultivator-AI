@@ -1,0 +1,103 @@
+[
+    {
+        "id": 2,
+        "title": "Choice between GATE & UPSC",
+        "date": "08 Jul 2026 • 01:46 PM",
+        "messages": [
+            {
+                "user": "I want to Choose one GATE, UPSC",
+                "ai": "That's a big decision. Have you thought about what draws you to each path? What excites you about GATE and what motivates you about UPSC?"
+            },
+            {
+                "user": "Give me more suggestion\r\nhow can i choose one",
+                "ai": "It's understandable to feel uncertain when faced with many options. Take a moment to pause and breathe. As you consider your choices, ask yourself:\n\n- What matters most to me right now? What are my highest priorities?\n- Which option aligns best with my values and long-term vision for myself? \n- What would I regret not trying or exploring later on?\n- What does my intuition or inner voice say about each possibility?\n\nReflecting on questions like these can help bring clarity. Remember, there's rarely a \"perfect\" choice. The goal is to make a decision you feel reasonably good about, based on the information available to you at this moment. Be kind to yourself regardless of the path you choose. You have the wisdom within to guide you.\n\nWhat thoughts or feelings come up for you as you ponder these questions? I'm here to listen without judgment."
+            },
+            {
+                "user": "Okay",
+                "ai": "Hello there! I'm Wisdom Cultivator AI. How can I assist you today?"
+            },
+            {
+                "user": "I am getting bored",
+                "ai": "It's natural to feel bored at times. When did you first notice this feeling coming up for you?"
+            },
+            {
+                "user": "2 Mins ago",
+                "ai": "I hear that you're feeling frustrated right now. Can you tell me more about what's been on your mind?"
+            },
+            {
+                "user": "q",
+                "ai": "Hello! I'm here to help you reflect on your thoughts and feelings in a calm and thoughtful way. What's on your mind today?"
+            }
+        ]
+    },
+    {
+        "id": 3,
+        "title": "I have been feeling stressed...",
+        "date": "08 Jul 2026 • 02:46 PM",
+        "messages": [
+            {
+                "user": "I have been feeling stressed lately because of my college assignments and internship.",
+                "ai": "It's understandable to feel stressed when juggling multiple responsibilities. Can you tell me more about what aspects of your assignments and internship are causing you the most stress?"
+            },
+            {
+                "user": "It gets worse whenever the deadlines are close, and I start doubting myself.",
+                "ai": "It's natural to experience self-doubt as deadlines approach, especially when you're working hard on important projects. When you start doubting yourself, what specific thoughts or feelings come up for you?"
+            },
+            {
+                "user": "What can I do to handle this without losing my motivation?",
+                "ai": "It's great that you're looking for ways to manage stress while maintaining your motivation. One approach is to break down your assignments and internship tasks into smaller, manageable steps. This can make the workload feel less overwhelming and help you focus on making progress. How do you currently approach breaking down your tasks?\n\nAdditionally, it can be helpful to practice self-compassion. Instead of being overly critical of yourself when you encounter challenges, try to treat yourself with the same kindness and understanding you would offer a good friend. How do you typically talk to yourself when you're feeling stressed about your work?\n\nLastly, don't hesitate to reach out for support when you need it. This could be talking to a trusted friend, family member, or even seeking guidance from a mentor or counselor at your college. Who do you feel comfortable turning to for support during stressful times?"
+            }
+        ]
+    },
+    {
+        "id": 4,
+        "title": "What is pythagoras Theorem",
+        "date": "08 Jul 2026 • 02:48 PM",
+        "messages": [
+            {
+                "user": "What is pythagoras Theorem",
+                "ai": "The Pythagorean Theorem is a fundamental principle in geometry that describes the relationship between the three sides of a right-angled triangle. It states that in a right triangle, the square of the length of the hypotenuse (the side opposite the right angle) is equal to the sum of the squares of the lengths of the other two sides. This can be expressed mathematically as:\n\na² + b² = c²\n\nwhere 'c' represents the length of the hypotenuse, and 'a' and 'b' represent the lengths of the other two sides.\n\nWould you like to explore how this theorem is applied in real-world situations or solve a problem using the Pythagorean Theorem?"
+            },
+            {
+                "user": "what is history",
+                "ai": "History is the study of past events, particularly in human affairs. It encompasses a wide range of topics, including political, social, economic, and cultural developments over time. Historians analyze evidence from various sources such as documents, artifacts, and oral traditions to understand and interpret the past.\n\nWould you like to discuss a specific period in history, or perhaps explore how historical events have shaped the world we live in today?"
+            }
+        ]
+    },
+    {
+        "id": 6,
+        "title": "Lately I've been comparing m...",
+        "date": "08 Jul 2026 • 03:48 PM",
+        "messages": [
+            {
+                "user": "Lately I've been comparing myself with my classmates. Whenever I see them achieving something, I feel like I'm falling behind, even though I'm working hard.",
+                "ai": "It's natural to look around and notice the successes of others, but it's important to remember that each person's journey is unique. Comparing ourselves can sometimes highlight our growth areas, but it can also overshadow the progress we've made. How do you feel when you focus on your own achievements, rather than those of your classmates?\n\nReflect on this: What does success mean to you, and how can you celebrate your own milestones more fully?"
+            },
+            {
+                "user": "Sometimes I even start questioning whether I'm good enough to become a software engineer.",
+                "ai": "It's common to have moments of doubt, especially in fields that are constantly evolving and competitive. The fact that you're putting in the effort to learn and improve is a strong indicator of your potential. It might help to remember that everyone, including those you admire, has faced challenges and setbacks in their journey. What are some specific skills or projects that you feel proud of, and how can you build on those strengths?\n\nReflect on this: What are some small wins you can acknowledge today, and how can you use them to fuel your confidence moving forward?"
+            },
+            {
+                "user": "What is one small thing I can focus on this week instead of comparing myself with others?",
+                "ai": "Focusing on your own growth can be empowering. One small step you could take this week is to set a specific, achievable goal related to your studies or projects. This could be learning a new coding concept, completing a small coding challenge, or even organizing your workspace for better productivity. By channeling your energy into a concrete task, you might find it easier to stay present and less caught up in comparisons. \n\nReflect on this: What is one skill or area you want to improve, and how can you take a small, actionable step toward it this week?"
+            }
+        ]
+    },
+    {
+        "id": 7,
+        "title": "Self-Doubt and Comparison Struggles",
+        "date": "08 Jul 2026 • 04:05 PM",
+        "messages": [
+            {
+                "user": "I recently lost confidence in myself. Even when I complete my work, I feel like it isn't good enough, and I constantly compare myself with others.",
+                "ai": "It's natural to feel this way at times. Comparing ourselves to others and doubting our abilities can create a cycle of self-criticism that's hard to break. Remember that everyone's journey is unique, and what you see in others is often just a highlight reel, not the full picture. Try to focus on your own growth and progress, rather than measuring yourself against others. What do you think might help you shift your perspective and appreciate your own efforts more?"
+            }
+        ]
+    },
+    {
+        "id": 8,
+        "title": "New Reflection",
+        "date": "08 Jul 2026 • 07:22 PM",
+        "messages": []
+    }
+]
