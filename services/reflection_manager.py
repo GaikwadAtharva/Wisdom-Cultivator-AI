@@ -2,6 +2,7 @@ import os
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from datetime import datetime
+from zoneinfo import ZoneInfo
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -11,6 +12,10 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 
 def get_connection():
     return psycopg2.connect(DATABASE_URL)
+
+
+def get_india_time():
+    return datetime.now(ZoneInfo("Asia/Kolkata")).strftime("%d %b %Y • %I:%M %p")
 
 
 def init_db():
@@ -47,7 +52,7 @@ def create_reflection(user_id):
     cur = conn.cursor()
 
     title = "New Reflection"
-    date = datetime.now().strftime("%d %b %Y • %I:%M %p")
+    date = get_india_time()
 
     cur.execute(
         "INSERT INTO reflections (user_id, title, date) VALUES (%s, %s, %s) RETURNING id",
