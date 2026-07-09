@@ -1,107 +1,192 @@
-import json
 import os
+import psycopg2
+from psycopg2.extras import RealDictCursor
 from datetime import datetime
+from dotenv import load_dotenv
 
-DATA_FOLDER = "data"
+load_dotenv()
 
-
-def get_data_file(user_id):
-    os.makedirs(DATA_FOLDER, exist_ok=True)
-    return os.path.join(DATA_FOLDER, f"reflections_{user_id}.json")
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 
-def load_reflections(user_id):
-    data_file = get_data_file(user_id)
-
-    if not os.path.exists(data_file):
-        return []
-
-    try:
-        with open(data_file, "r", encoding="utf-8") as file:
-            return json.load(file)
-    except:
-        return []
+def get_connection():
+    return psycopg2.connect(DATABASE_URL)
 
 
-def save_reflections(user_id, reflections):
-    data_file = get_data_file(user_id)
+def init_db():
+    conn = get_connection()
+    cur = conn.cursor()
 
-    with open(data_file, "w", encoding="utf-8") as file:
-        json.dump(reflections, file, indent=4, ensure_ascii=False)
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS reflections (
+            id SERIAL PRIMARY KEY,
+            user_id TEXT NOT NULL,
+            title TEXT NOT NULL,
+            date TEXT NOT NULL
+        );
+    """)
+
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS messages (
+            id SERIAL PRIMARY KEY,
+            reflection_id INTEGER REFERENCES reflections(id) ON DELETE CASCADE,
+            user_message TEXT NOT NULL,
+            ai_message TEXT NOT NULL
+        );
+    """)
+
+    conn.commit()
+    cur.close()
+    conn.close()
 
 
 def create_reflection(user_id):
-    reflections = load_reflections(user_id)
+    init_db()
 
-    new_id = 1
-    if reflections:
-        new_id = max(r["id"] for r in reflections) + 1
+    conn = get_connection()
+    cur = conn.cursor()
 
-    reflection = {
-        "id": new_id,
-        "title": "New Reflection",
-        "date": datetime.now().strftime("%d %b %Y • %I:%M %p"),
-        "messages": []
-    }
+    title = "New Reflection"
+    date = datetime.now().strftime("%d %b %Y • %I:%M %p")
 
-    reflections.append(reflection)
-    save_reflections(user_id, reflections)
+    cur.execute(
+        "INSERT INTO reflections (user_id, title, date) VALUES (%s, %s, %s) RETURNING id",
+        (user_id, title, date)
+    )
 
-    return new_id
+    reflection_id = cur.fetchone()[0]
 
+    conn.commit()
+    cur.close()
+    conn.close()
 
-def get_reflection(user_id, reflection_id):
-    reflections = load_reflections(user_id)
-
-    for reflection in reflections:
-        if reflection["id"] == reflection_id:
-            return reflection
-
-    return None
-
-
-def update_reflection_title(user_id, reflection_id, title):
-    reflections = load_reflections(user_id)
-
-    for reflection in reflections:
-        if reflection["id"] == reflection_id:
-            reflection["title"] = title
-            break
-
-    save_reflections(user_id, reflections)
-
-
-def add_message(user_id, reflection_id, user, ai):
-    reflections = load_reflections(user_id)
-
-    for reflection in reflections:
-        if reflection["id"] == reflection_id:
-            reflection["messages"].append({
-                "user": user,
-                "ai": ai
-            })
-            break
-
-    save_reflections(user_id, reflections)
-
-
-def delete_reflection(user_id, reflection_id):
-    reflections = load_reflections(user_id)
-
-    reflections = [
-        reflection for reflection in reflections
-        if reflection["id"] != reflection_id
-    ]
-
-    save_reflections(user_id, reflections)
+    return reflection_id
 
 
 def get_all_reflections(user_id):
-    return load_reflections(user_id)
+    init_db()
+
+    conn = get_connection()
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+
+    cur.execute(
+        "SELECT * FROM reflections WHERE user_id = %s ORDER BY id ASC",
+        (user_id,)
+    )
+
+    reflections = cur.fetchall()
+
+    for reflection in reflections:
+        reflection["messages"] = get_messages(reflection["id"])
+
+    cur.close()
+    conn.close()
+
+    return reflections
+
+
+def get_reflection(user_id, reflection_id):
+    init_db()
+
+    conn = get_connection()
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+
+    cur.execute(
+        "SELECT * FROM reflections WHERE id = %s AND user_id = %s",
+        (reflection_id, user_id)
+    )
+
+    reflection = cur.fetchone()
+
+    cur.close()
+    conn.close()
+
+    if reflection:
+        reflection["messages"] = get_messages(reflection_id)
+
+    return reflection
+
+
+def get_messages(reflection_id):
+    conn = get_connection()
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+
+    cur.execute(
+        "SELECT user_message, ai_message FROM messages WHERE reflection_id = %s ORDER BY id ASC",
+        (reflection_id,)
+    )
+
+    rows = cur.fetchall()
+
+    cur.close()
+    conn.close()
+
+    messages = []
+
+    for row in rows:
+        messages.append({
+            "user": row["user_message"],
+            "ai": row["ai_message"]
+        })
+
+    return messages
+
+
+def add_message(user_id, reflection_id, user, ai):
+    init_db()
+
+    reflection = get_reflection(user_id, reflection_id)
+
+    if reflection is None:
+        return
+
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute(
+        "INSERT INTO messages (reflection_id, user_message, ai_message) VALUES (%s, %s, %s)",
+        (reflection_id, user, ai)
+    )
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+
+def update_reflection_title(user_id, reflection_id, title):
+    init_db()
+
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute(
+        "UPDATE reflections SET title = %s WHERE id = %s AND user_id = %s",
+        (title, reflection_id, user_id)
+    )
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+
+def delete_reflection(user_id, reflection_id):
+    init_db()
+
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute(
+        "DELETE FROM reflections WHERE id = %s AND user_id = %s",
+        (reflection_id, user_id)
+    )
+
+    conn.commit()
+    cur.close()
+    conn.close()
 
 
 def get_statistics(user_id):
-    reflections = load_reflections(user_id)
+    reflections = get_all_reflections(user_id)
 
     total_reflections = len(reflections)
     total_messages = sum(len(reflection["messages"]) for reflection in reflections)

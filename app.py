@@ -20,6 +20,7 @@ app.secret_key = "wisdom-cultivator-session-key"
 def get_user_id():
     if "user_id" not in session:
         session["user_id"] = str(uuid.uuid4())
+
     return session["user_id"]
 
 
@@ -45,6 +46,7 @@ def chat():
 def new_reflection():
     user_id = get_user_id()
     reflection_id = create_reflection(user_id)
+
     return redirect(url_for("open_reflection", reflection_id=reflection_id))
 
 
@@ -71,6 +73,7 @@ def delete_reflection_route(reflection_id):
         return redirect(url_for("open_reflection", reflection_id=new_id))
 
     latest_reflection = reflections[-1]
+
     return redirect(url_for("open_reflection", reflection_id=latest_reflection["id"]))
 
 
