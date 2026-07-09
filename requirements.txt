@@ -2,3 +2,4 @@ flask
 python-dotenv
 ibm-watsonx-ai
 gunicorn
+psycopg2-binary
