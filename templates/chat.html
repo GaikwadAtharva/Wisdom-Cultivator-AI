@@ -4,29 +4,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Wisdom Cultivator AI | Reflection Journal</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/chat.css') }}">
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/chat.css') }}"
+    >
+
+    <style>
+        .action-planner-area {
+            display: flex;
+            justify-content: center;
+            padding: 12px 20px;
+            background: #0f1b35;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .action-planner-btn {
+            padding: 12px 22px;
+            border: none;
+            border-radius: 12px;
+            background: #0f62fe;
+            color: white;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+
+        .action-planner-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .action-planner-btn:disabled {
+            cursor: wait;
+            opacity: 0.7;
+            transform: none;
+        }
+
+        @media (max-width: 768px) {
+            .action-planner-btn {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
+<!-- Required IBM Orchestrate container -->
+<div id="root"></div>
+
 <div class="app-shell">
 
-    <button class="mobile-menu-btn" id="mobileMenuBtn">
+    <button
+        class="mobile-menu-btn"
+        id="mobileMenuBtn"
+        type="button"
+        aria-label="Open reflection menu">
         ☰
     </button>
 
     <aside class="journal-sidebar">
 
         <div class="brand-box">
-            <img src="{{ url_for('static', filename='images/logos/logo.png') }}" alt="Wisdom Cultivator AI Logo" class="brand-logo">
+
+            <img
+                src="{{ url_for('static', filename='images/logos/logo.png') }}"
+                alt="Wisdom Cultivator AI Logo"
+                class="brand-logo">
 
             <h2>Reflection Journal</h2>
             <p>Powered by IBM Granite</p>
+
         </div>
 
         <div class="stats-box">
+
             <h3>📊 Statistics</h3>
 
             <div class="stat-item">
@@ -43,6 +98,7 @@
                 <span>Latest</span>
                 <strong>{{ stats.latest_date }}</strong>
             </div>
+
         </div>
 
         <a href="/new" class="new-reflection-btn">
@@ -53,7 +109,8 @@
             type="text"
             id="searchReflections"
             class="search-box"
-            placeholder="Search reflections...">
+            placeholder="Search reflections..."
+            aria-label="Search reflections">
 
         <div class="journal-list">
 
@@ -61,26 +118,45 @@
 
             <div class="journal-row">
 
-                <a href="/chat/{{ item.id }}"
-                   class="journal-item {% if item.id == reflection.id %}active{% endif %}">
+                <a
+                    href="/chat/{{ item.id }}"
+                    class="journal-item {% if item.id == reflection.id %}active{% endif %}">
 
-                    <span class="journal-title">{{ item.title }}</span>
-                    <span class="journal-date">{{ item.date }}</span>
+                    <span class="journal-title">
+                        {{ item.title }}
+                    </span>
+
+                    <span class="journal-date">
+                        {{ item.date }}
+                    </span>
 
                 </a>
 
-                <form action="/rename/{{ item.id }}" method="POST" class="rename-form">
-                    <input type="hidden" name="new_title" value="">
-                    <button type="button"
-                            class="rename-btn"
-                            onclick="renameReflection(this, '{{ item.title }}')">
+                <form
+                    action="/rename/{{ item.id }}"
+                    method="POST"
+                    class="rename-form">
+
+                    <input
+                        type="hidden"
+                        name="new_title"
+                        value="">
+
+                    <button
+                        type="button"
+                        class="rename-btn"
+                        aria-label="Rename reflection"
+                        onclick="renameReflection(this, '{{ item.title }}')">
                         ✏️
                     </button>
+
                 </form>
 
-                <a href="/delete/{{ item.id }}"
-                   class="delete-btn"
-                   onclick="return confirm('Delete this reflection?')">
+                <a
+                    href="/delete/{{ item.id }}"
+                    class="delete-btn"
+                    aria-label="Delete reflection"
+                    onclick="return confirm('Delete this reflection?')">
                     🗑
                 </a>
 
@@ -102,15 +178,19 @@
                     ← Home
                 </a>
 
-                <a href="/export/{{ reflection.id }}" class="export-btn">
+                <a
+                    href="/export/{{ reflection.id }}"
+                    class="export-btn">
                     📄 Export
                 </a>
 
             </div>
 
             <div class="topbar-title">
+
                 <h1>Wisdom Cultivator AI</h1>
                 <p>Reflect. Understand. Grow.</p>
+
             </div>
 
         </header>
@@ -122,17 +202,31 @@
                 {% for message in reflection.messages %}
 
                 <div class="message-row user-row">
+
                     <div class="message-bubble user-bubble">
-                        <span class="message-label">You</span>
+
+                        <span class="message-label">
+                            You
+                        </span>
+
                         <p>{{ message.user }}</p>
+
                     </div>
+
                 </div>
 
                 <div class="message-row ai-row">
+
                     <div class="message-bubble ai-bubble">
-                        <span class="message-label">Wisdom Cultivator AI</span>
+
+                        <span class="message-label">
+                            Wisdom Cultivator AI
+                        </span>
+
                         <p>{{ message.ai }}</p>
+
                     </div>
+
                 </div>
 
                 {% endfor %}
@@ -140,16 +234,38 @@
             {% else %}
 
                 <div class="empty-state">
+
                     <h2>Start a new reflection 🌱</h2>
+
                     <p>
-                        Share what is on your mind. Your reflection will be saved in your journal,
-                        and IBM Granite will respond with thoughtful guidance.
+                        Share what is on your mind. Your reflection will be
+                        saved in your journal, and IBM Granite will respond
+                        with thoughtful guidance.
                     </p>
+
                 </div>
 
             {% endif %}
 
         </section>
+
+        {% if reflection.messages %}
+
+        <div class="action-planner-area">
+
+            <button
+                type="button"
+                id="generateActionPlanBtn"
+                class="action-planner-btn"
+                onclick="generateActionPlan()">
+
+                🎯 Generate My Action Plan
+
+            </button>
+
+        </div>
+
+        {% endif %}
 
         <form method="POST" class="chat-input-area">
 
@@ -171,15 +287,179 @@
 <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
 <script>
-function renameReflection(button, oldTitle) {
-    const newTitle = prompt("Enter new reflection title:", oldTitle);
+    let orchestrateInstance = null;
 
-    if (newTitle && newTitle.trim() !== "") {
-        const form = button.closest("form");
-        form.querySelector("input[name='new_title']").value = newTitle.trim();
-        form.submit();
+    const latestUserReflection = {{ (
+        reflection.messages[-1].user
+        if reflection.messages
+        else ""
+    ) | tojson }};
+
+    const latestGraniteResponse = {{ (
+        reflection.messages[-1].ai
+        if reflection.messages
+        else ""
+    ) | tojson }};
+
+
+    function renameReflection(button, oldTitle) {
+        const newTitle = prompt(
+            "Enter new reflection title:",
+            oldTitle
+        );
+
+        if (newTitle && newTitle.trim() !== "") {
+            const form = button.closest("form");
+
+            form.querySelector(
+                "input[name='new_title']"
+            ).value = newTitle.trim();
+
+            form.submit();
+        }
     }
-}
+
+
+    async function generateActionPlan() {
+        const button = document.getElementById(
+            "generateActionPlanBtn"
+        );
+
+        if (!latestUserReflection) {
+            alert("Please write a reflection first.");
+            return;
+        }
+
+        if (!orchestrateInstance) {
+            alert(
+                "The IBM Action Planner is still loading. " +
+                "Please wait a few seconds and try again."
+            );
+            return;
+        }
+
+        button.disabled = true;
+        button.textContent = "Generating your plan...";
+
+        const plannerPrompt = `
+Create a personalized action plan using the following reflection and guidance.
+
+User reflection:
+${latestUserReflection}
+
+IBM Granite guidance:
+${latestGraniteResponse}
+
+Do not ask the user to repeat the reflection.
+
+Generate:
+- Today's main goal
+- Five practical action steps
+- One healthy habit
+- One motivational sentence
+- One evening reflection question
+        `.trim();
+
+        try {
+            await orchestrateInstance.changeView({
+                launcher: false,
+                mainWindow: true
+            });
+
+            await orchestrateInstance.send(
+                plannerPrompt,
+                { silent: true }
+            );
+
+            button.textContent = "✓ Action Plan Generated";
+
+        } catch (error) {
+            console.error(
+                "Unable to generate action plan:",
+                error
+            );
+
+            alert(
+                "The action plan could not be generated. " +
+                "Please try again."
+            );
+
+            button.disabled = false;
+            button.textContent = "🎯 Generate My Action Plan";
+        }
+    }
+
+
+    function onOrchestrateLoad(instance) {
+        orchestrateInstance = instance;
+
+        instance.on(
+            "chat:ready",
+            async function () {
+                orchestrateInstance = instance;
+
+                await instance.changeView({
+                    launcher: false,
+                    mainWindow: false
+                });
+
+                console.log(
+                    "IBM Orchestrate Action Planner is ready."
+                );
+            }
+        );
+    }
+</script>
+
+<!-- IBM watsonx Orchestrate Action Planner -->
+<script>
+    window.wxOConfiguration = {
+        orchestrationID:
+            "394b87683cd54f09a5ca047063303185_a01b9eb4-0d49-4934-87f2-c4430178909e",
+
+        hostURL:
+            "https://us-south.watson-orchestrate.cloud.ibm.com",
+
+        rootElementID: "root",
+
+        deploymentPlatform: "ibmcloud",
+
+        crn:
+            "crn:v1:bluemix:public:watsonx-orchestrate:us-south:a/394b87683cd54f09a5ca047063303185:a01b9eb4-0d49-4934-87f2-c4430178909e::",
+
+        showLauncher: false,
+
+        chatOptions: {
+            agentId:
+                "74b82aa2-2c77-4bf2-a1d6-605aee8b6c84",
+
+            onLoad: onOrchestrateLoad
+        },
+
+        layout: {
+            form: "float",
+            width: "390px",
+            height: "620px",
+            showOrchestrateHeader: true
+        }
+    };
+
+    setTimeout(function () {
+        const orchestrateScript =
+            document.createElement("script");
+
+        orchestrateScript.src =
+            `${window.wxOConfiguration.hostURL}/wxochat/wxoLoader.js?embed=true`;
+
+        orchestrateScript.addEventListener(
+            "load",
+            function () {
+                wxoLoader.init();
+            }
+        );
+
+        document.head.appendChild(orchestrateScript);
+    }, 0);
 </script>
 
 </body>
