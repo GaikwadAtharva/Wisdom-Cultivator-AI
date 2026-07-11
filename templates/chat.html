@@ -43,6 +43,10 @@
             transform: none;
         }
 
+        .reflection-data {
+            display: none;
+        }
+
         @media (max-width: 768px) {
             .action-planner-btn {
                 width: 100%;
@@ -55,6 +59,17 @@
 
 <!-- Required IBM Orchestrate container -->
 <div id="root"></div>
+
+<!-- Safely passes Flask/Jinja data to JavaScript -->
+<textarea
+    id="latestUserReflectionData"
+    class="reflection-data"
+    aria-hidden="true">{{ reflection.messages[-1].user if reflection.messages else "" }}</textarea>
+
+<textarea
+    id="latestGraniteResponseData"
+    class="reflection-data"
+    aria-hidden="true">{{ reflection.messages[-1].ai if reflection.messages else "" }}</textarea>
 
 <div class="app-shell">
 
@@ -289,18 +304,21 @@
 <script>
     let orchestrateInstance = null;
 
-    const latestUserReflection = {{ (
-        reflection.messages[-1].user
-        if reflection.messages
-        else ""
-    ) | tojson }};
+    const userReflectionElement =
+        document.getElementById("latestUserReflectionData");
 
-    const latestGraniteResponse = {{ (
-        reflection.messages[-1].ai
-        if reflection.messages
-        else ""
-    ) | tojson }};
+    const graniteResponseElement =
+        document.getElementById("latestGraniteResponseData");
 
+    const latestUserReflection =
+        userReflectionElement
+            ? userReflectionElement.value.trim()
+            : "";
+
+    const latestGraniteResponse =
+        graniteResponseElement
+            ? graniteResponseElement.value.trim()
+            : "";
 
     function renameReflection(button, oldTitle) {
         const newTitle = prompt(
@@ -318,7 +336,6 @@
             form.submit();
         }
     }
-
 
     async function generateActionPlan() {
         const button = document.getElementById(
@@ -389,7 +406,6 @@ Generate:
         }
     }
 
-
     function onOrchestrateLoad(instance) {
         orchestrateInstance = instance;
 
@@ -455,6 +471,15 @@ Generate:
             "load",
             function () {
                 wxoLoader.init();
+            }
+        );
+
+        orchestrateScript.addEventListener(
+            "error",
+            function () {
+                console.error(
+                    "IBM Orchestrate script could not be loaded."
+                );
             }
         );
 

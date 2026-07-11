@@ -1,9 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-    const textarea = document.querySelector("textarea");
-    const messages = document.querySelector(".chat-messages");
     const form = document.querySelector(".chat-input-area");
-    const button = form ? form.querySelector("button") : null;
+    const textarea = form
+        ? form.querySelector('textarea[name="message"]')
+        : null;
+
+    const messages = document.querySelector(".chat-messages");
+    const button = form ? form.querySelector('button[type="submit"]') : null;
     const searchBox = document.getElementById("searchReflections");
     const menuBtn = document.getElementById("mobileMenuBtn");
     const sidebar = document.querySelector(".journal-sidebar");
@@ -12,72 +15,82 @@ document.addEventListener("DOMContentLoaded", () => {
         messages.scrollTop = messages.scrollHeight;
     }
 
-    if (textarea) {
+    if (form && textarea) {
+
         textarea.focus();
 
         function resizeTextarea() {
             textarea.style.height = "auto";
-            textarea.style.height = textarea.scrollHeight + "px";
+            textarea.style.height = `${textarea.scrollHeight}px`;
         }
 
         resizeTextarea();
 
         textarea.addEventListener("input", resizeTextarea);
 
-        form.addEventListener("submit", (e) => {
+        form.addEventListener("submit", (event) => {
 
-            if (textarea.value.trim() === "") {
-                e.preventDefault();
+            const message = textarea.value.trim();
+
+            if (message === "") {
+                event.preventDefault();
                 textarea.focus();
                 return;
             }
 
             if (button) {
-                button.innerText = "Reflecting...";
+                button.textContent = "Reflecting...";
                 button.disabled = true;
             }
-
         });
 
-        textarea.addEventListener("keydown", function (e) {
+        textarea.addEventListener("keydown", (event) => {
 
-            if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                form.requestSubmit();
+            if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault();
+
+                if (typeof form.requestSubmit === "function") {
+                    form.requestSubmit();
+                } else if (button) {
+                    button.click();
+                }
             }
-
         });
     }
 
     if (searchBox) {
+
         searchBox.addEventListener("input", () => {
 
-            const searchText = searchBox.value.toLowerCase();
+            const searchText = searchBox.value
+                .trim()
+                .toLowerCase();
+
             const rows = document.querySelectorAll(".journal-row");
 
-            rows.forEach(row => {
+            rows.forEach((row) => {
                 const title = row.innerText.toLowerCase();
 
-                row.style.display = title.includes(searchText) ? "flex" : "none";
+                row.style.display = title.includes(searchText)
+                    ? "flex"
+                    : "none";
             });
-
         });
     }
 
     if (menuBtn && sidebar) {
 
-        menuBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
+        menuBtn.addEventListener("click", (event) => {
+            event.stopPropagation();
             sidebar.classList.toggle("show");
         });
 
-        sidebar.addEventListener("click", (e) => {
-            e.stopPropagation();
+        sidebar.addEventListener("click", (event) => {
+            event.stopPropagation();
         });
 
         document.addEventListener("click", () => {
             sidebar.classList.remove("show");
         });
     }
-
 });
